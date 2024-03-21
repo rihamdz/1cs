@@ -10,6 +10,6 @@ class Employee extends Model
 {
     use HasFactory,HasApiTokens;
     protected $fillable=[
-        'id'  ,'email', 'phoneNumber','active','name', 	'salary'
+        'id'  ,'email', 'phoneNumber','active','name', 	'salary','avatar'
     ];
 }

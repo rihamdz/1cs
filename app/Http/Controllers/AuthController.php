@@ -16,7 +16,6 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
         ]);
@@ -27,27 +26,20 @@ class AuthController extends Controller
         if ($employee) {
             // Si un employé avec cet e-mail existe déjà, mettez à jour ses données
             $employee->update([
-                'name' => $request->name,
                 'active' => true, 
             ]);
             //créez un nouvel utilisateur dans la table "users"
             $user = User::create([
-                'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make($request->password), // Hash the password
                 'email_verified_at' => null, // Marquer comme non vérifié pour le moment
             ]);
-              // Génération d'un token pour la vérification par e-mail
-        $verificationToken = Str::random(60);
-        $user->verification_token = $verificationToken;
-        $user->save();
-        
-        // Envoi de l'e-mail de vérification
-        // Vous pouvez utiliser Laravel Notification ou d'autres bibliothèques pour gérer l'envoi d'e-mails
-        // Voici un exemple simple pour l'envoi d'e-mails
-        Mail::to($user->email)->send(new EmailVerificationNotification($user));
-        return response()->json(['message' => 'User added successfully'], 200);
+            // Génération d'un token pour la vérification par e-mail
+            $verificationToken = Str::random(60);
+            $user->verification_token = $verificationToken;
+            $user->save();
 
+            return response()->json(['message' => 'User added successfully'], 200);
         } else {
             // Si aucun employé avec cet e-mail n'existe, retournez une erreur
             return response()->json(['message' => 'Employee not found with this email'], 404);

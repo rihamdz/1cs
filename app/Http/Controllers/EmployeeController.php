@@ -9,7 +9,7 @@ class EmployeeController extends Controller
     
     public function index()
     {
-        return Employee::select('id','email','phoneNumber', 	'name', 	'salary')->get();
+        return Employee::select('id','email','phoneNumber', 'avatar','name', 	'salary')->get();
     }
 
     
@@ -23,15 +23,39 @@ class EmployeeController extends Controller
             'email'=>  'required',
             'name'	=>  'required',
             'phoneNumber'=>'required',
-           'salary'=> 'required' ,
-
+            'salary'=> 'required',
+            'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validation pour l'avatar
         ]);
-        Employee::create($request->post());
+
+        // Créer un nouvel employé
+        $employee = new Employee();
+        $employee->email = $request->input('email');
+        $employee->name = $request->input('name');
+        $employee->phoneNumber = $request->input('phoneNumber');
+        $employee->salary = $request->input('salary');
+
+        // Gestion de l'avatar
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar');
+            $avatarName = time().'.'.$avatar->getClientOriginalExtension();
+            $avatar->storeAs('avatars', $avatarName); // Stocker l'avatar dans le dossier 'avatars'
+            $employee->avatar = $avatarName;
+        } else {
+            // Avatar par défaut
+            $defaultAvatar = 'default-avatar.png';
+            $employee->avatar = $defaultAvatar;
+        }
+
+        // Enregistrer l'employé
+        $employee->save();
 
         return response()->json([
-            'message'=>'Item add succsufly'
+            'message'=>'Employee added successfully'
         ]);
     }
+
+    // Autres méthodes existantes...
+
 
     /**
      * Display the specified resource.

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('active')->default(false);
             //8 avant virgule et apres (en tour) et 2 apre virgule
             $table->decimal('salary', 8, 2);
+            $table->string('avatar')->default('default-avatar.jpg'); // Colonne pour l'avatar
 
             $table->timestamps();
         });
